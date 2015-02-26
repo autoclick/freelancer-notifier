@@ -15,4 +15,5 @@
     +Independent with freelancer.com setting
     +Use by your way with multi options setting
 **Install Free:** goo.gl/5fAos1
+
 [<img src="http://i.imgur.com/cfLeyuW.png">](https://chrome.google.com/webstore/detail/freelancer-notifier/ihfoldmgpclkfjkjklcoenpiahfpbfig)
