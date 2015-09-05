@@ -10,7 +10,7 @@
     +Desktop Notification
     +Sound Notification
     +First bid to win bid
-    +Open Source: https://github.com/autoclick/freelancer-notifier
+    +Open Source
     +Websocket Connect very lightweight
     +Independent with freelancer.com setting
     +Use by your way with multi options setting
