@@ -14,6 +14,6 @@
     +Websocket Connect very lightweight
     +Independent with freelancer.com setting
     +Use by your way with multi options setting
-**Install Free:** www.goo.gl/s9elLd
+**Install Free:** [Freelancer Notifier](https://chrome.google.com/webstore/detail/freelancer-notifier/eafegcdajfclfclngeonijfcfigeakgg)
 
 [<img src="http://i.imgur.com/cfLeyuW.png">](http://goo.gl/s9elLd)
