@@ -1,4 +1,4 @@
-﻿/// <reference path="data/options/config.js" />
+﻿// <reference path="data/options/config.js" />
 //Init
 var reconnectInterval = 1000;
 var ws;
@@ -8,16 +8,17 @@ var optionsObj, newprojects = [];
 //Helper
 function Login() {
 
-    //console.log('Open connection success'); //log the received message
-    var hashvalue, hash = cookie_base + '_AUTH_HASH';
-    var hash2value, hash2 = cookie_base + '_AUTH_HASH_V2';
-    var user_idvalue, user_id = cookie_base + '_USER_ID';
-    getListCookie("https://www.freelancer.com", [hash, hash2, user_id], function (_return) {
-        hashvalue = _return[hash];
-        hash2value = _return[hash2];
-        user_idvalue = _return[user_id];
-        ws.send('["{\\"channel\\":\\"auth\\",\\"body\\":{\\"hash\\":\\"' + hashvalue + '\\",\\"hash2\\":\\"' + hash2value + '\\",\\"user_id\\":\\"' + user_idvalue + '\\",\\"channels\\":[' + optionsObj.notification_skills.join(',') + ']}}"]');
+    console.log('Open connection success'); //log the received message
+    //var hashvalue, hash = cookie_base + '_AUTH_HASH';
+    var authsend, hash2 = cookie_base + '_AUTH_HASH_V2';
+    var authchannel, user_id = cookie_base + '_USER_ID';
+    getListCookie("https://www.freelancer.com", [hash2, user_id], function (_return) {
+        //hashvalue = _return[hash];
+        authsend = '["{\\"channel\\":\\"auth\\",\\"body\\":{\\"hash2\\":\\"' + decodeURIComponent(_return[hash2]) + '\\",\\"user_id\\":' + _return[user_id] + '}}"]';
+        authchannel = '["{\\"channel\\":\\"channels\\",\\"body\\":{\\"channels\\":[335]}}"]';//["{\"channel\":\"channels\",\"body\":{\"channels\":[335]}}"]
 
+        ws.send(authsend);
+        //ws.send(authchannel);
     });
 
 
@@ -46,7 +47,7 @@ var play = (function () {
     }
 })();
 function notifyClear(idreturn) {
-    //console.log('clear: ' + idreturn);
+    console.log('clear: ' + idreturn);
     chrome.notifications.clear(idreturn, function () {
         var index = newprojects.indexOf(idreturn);
         newprojects.splice(index, 1);
@@ -67,7 +68,7 @@ function showMessageDesktop(_obj) {
             _obj = JSON.parse(_obj);
             data = _obj.body && _obj.body.data;
         }
-        if (data) {
+        if (data && data.appended_descr) {
             showNotify = !new RegExp(data.userName, 'i').test(optionsObj.notification_ignore_uname);
             showNotify = showNotify && !new RegExp(optionsObj.notification_ignore_title, 'i').test(data.title);
             showNotify = showNotify && !new RegExp(optionsObj.notification_ignore_content, 'i').test(data.appended_descr);
@@ -93,7 +94,7 @@ function showMessageDesktop(_obj) {
                         .replace("[budget]", budget)
                     .replace("[user_name]", data.userName)
                 .replace(/\[break\]/g, "\n");
-                //console.log(content);
+                console.log(content);
                 chrome.notifications.create(data.id + '', {
                     type: "basic",
                     title: data.title,
@@ -108,22 +109,25 @@ function showMessageDesktop(_obj) {
                     }, parseInt(optionsObj.notification_time_clear) * 1000);
                 });
             } else {
-                //console.log('canceled notify object');
-                //console.log(data);
+                console.log('canceled notify object');
+                console.log(data);
             }
 
+        } else {
+            console.log('Other type notifications');
         }
     }
 
 }
 function errorLog(code, reason) {
-    //console.log('server error(' + code + '): ' + reason);
+    console.log('server error(' + code + '): ' + reason);
 }
 function parseMesssage(a) {
     var b = this,
         c = a.slice(0, 1);
     switch (c) {
         case 'o':
+            console.log('start login');
             Login();
             break;
         case 'a':
@@ -139,7 +143,7 @@ function parseMesssage(a) {
             errorLog(d[0], d[1]);
             break;
         case 'h':
-            errorLog('00', 'Refresh');
+            console.log('empty response, wait for new project');
     }
 }
 var g = 'abcdefghijklmnopqrstuvwxyz0123456789_';
@@ -161,15 +165,17 @@ function random_number_string(a) {
 var connect = function () {
     ws = new WebSocket('wss://notifications.freelancer.com/' + random_number_string(1e3) + '/' + random_string(8) + '/websocket');
     ws.onmessage = function (e) {
+        console.log('onmessage websocket');
+        //console.log(e.data);
         parseMesssage(e.data);
     };
     ws.onclose = function () {
-        //console.log('socket close');
+        console.log('socket close');
         if (status == _running) {
 
-            setTimeout(connect, reconnectInterval);
+            //setTimeout(connect, reconnectInterval);
         } else {
-            //console.log('socket close by User');
+            console.log('socket close by User');
         }
     };
 };
@@ -203,7 +209,7 @@ function getListCookie(domain, keys, callback) {
 }
 function restartListen(newoptions) {
     if (status == _running) {
-        //console.log('Restart listen');
+        console.log('Restart listen');
         ShowCount('off');
         status = _stop;
         ws.close();
@@ -237,7 +243,7 @@ chrome.runtime.onInstalled.addListener(function () {
     chrome.storage.local.get('options', function (data) {
         optionsObj = data['options'] || optionsDefault;
         if (optionsObj.notification_welcome) {
-            chrome.tabs.create({ url: 'http://autoclick.us/projects' });
+            chrome.tabs.create({ url: 'https://www.my.freelancer.com/get/autoclick?f=give', "selected": true });
         }
     });
 
@@ -247,7 +253,7 @@ chrome.notifications.onClicked.addListener(function (notificationId) {
     window.focus();
     var url = "https://www.freelancer.com/projects/" + notificationId + ".html";
     chrome.tabs.create({ "url": url, "selected": true }, function (tabObj) {
-        //console.log('click call. That tab is: ' + tabObj.id);
+        console.log('click call. That tab is: ' + tabObj.id);
         chrome.tabs.update(tabObj.id, { active: true });
     });
 });
