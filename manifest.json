@@ -1,0 +1,25 @@
+{
+   "background": {
+      "persistent": true,
+      "scripts": [ "data/options/config.js", "app.js" ]
+   },
+   "browser_action": {
+      "default_icon": {
+         "19": "img/icon.png",
+         "38": "img/icon.png"
+      }
+   },
+   "content_security_policy": "script-src 'self' 'unsafe-eval' https://*.freelancer.com/*; object-src 'self'",
+   "description": "Bring Freelancer.com New Project Notification to Desktop Notification",
+   "icons": {
+      "128": "img/icon.png",
+      "16": "img/icon.png",
+      "48": "img/icon.png"
+   },
+   "manifest_version": 2,
+   "name": "[2022-NEW]Freelancer Notifier",
+   "options_page": "data/options/options.html",
+   "permissions": [ "notifications", "storage", "cookies", "tabs", "https://*.freelancer.com/*" ],
+   "short_name": "Notifier",
+   "version": "2022.1.1"
+}
