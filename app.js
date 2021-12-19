@@ -15,10 +15,10 @@ function Login() {
     getListCookie("https://www.freelancer.com", [hash2, user_id], function (_return) {
         //hashvalue = _return[hash];
         authsend = '["{\\"channel\\":\\"auth\\",\\"body\\":{\\"hash2\\":\\"' + decodeURIComponent(_return[hash2]) + '\\",\\"user_id\\":' + _return[user_id] + '}}"]';
-        authchannel = '["{\\"channel\\":\\"channels\\",\\"body\\":{\\"channels\\":[335]}}"]';//["{\"channel\":\"channels\",\"body\":{\"channels\":[335]}}"]
-
+        authchannel = '["{\\"channel\\":\\"channels\\",\\"body\\":{\\"channels\\":['+ optionsObj.notification_skills.join(',') +']}}"]';
+        console.log("list skill get notification: "+optionsObj.notification_skills.join(','));
         ws.send(authsend);
-        //ws.send(authchannel);
+        ws.send(authchannel);
     });
 
 
@@ -243,7 +243,7 @@ chrome.runtime.onInstalled.addListener(function () {
     chrome.storage.local.get('options', function (data) {
         optionsObj = data['options'] || optionsDefault;
         if (optionsObj.notification_welcome) {
-            chrome.tabs.create({ url: 'https://www.my.freelancer.com/get/autoclick?f=give', "selected": true });
+            chrome.tabs.create({ url: 'https://www.freelancer.com/get/autoclick?f=give', "selected": true });
         }
     });
 
