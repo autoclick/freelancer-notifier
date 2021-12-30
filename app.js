@@ -1,9 +1,9 @@
 ﻿// <reference path="data/options/config.js" />
 //Init
-var reconnectInterval = 1000;
+var reconnectInterval = 60000;
 var ws;
 var _stop = -1, _running = 1, _normal = 0;
-var status = _normal, cookie_base = 'GETAFREE';
+var _status = _normal, cookie_base = 'GETAFREE';
 var optionsObj, newprojects = [];
 //Helper
 function Login() {
@@ -59,6 +59,33 @@ function shorten(str) {
     if (str.length < optionsObj.notification_truncate) return str;
     return str.substr(0, optionsObj.notification_truncate / 2) + "..." + str.substr(str.length - optionsObj.notification_truncate / 2);
 }
+function timeSince(date) {
+
+    var seconds = Math.floor((new Date() - date) / 1000);
+  
+    var interval = seconds / 31536000;
+  
+    if (interval > 1) {
+      return Math.floor(interval) + " years";
+    }
+    interval = seconds / 2592000;
+    if (interval > 1) {
+      return Math.floor(interval) + " months";
+    }
+    interval = seconds / 86400;
+    if (interval > 1) {
+      return Math.floor(interval) + " days";
+    }
+    interval = seconds / 3600;
+    if (interval > 1) {
+      return Math.floor(interval) + " hours";
+    }
+    interval = seconds / 60;
+    if (interval > 1) {
+      return Math.floor(interval) + " minutes";
+    }
+    return Math.floor(seconds) + " seconds";
+  }
 function showMessageDesktop(_obj) {
     var showNotify = false;
     if (optionsObj.notification_show) {
@@ -72,6 +99,7 @@ function showMessageDesktop(_obj) {
             showNotify = !new RegExp(data.userName, 'i').test(optionsObj.notification_ignore_uname);
             showNotify = showNotify && !new RegExp(optionsObj.notification_ignore_title, 'i').test(data.title);
             showNotify = showNotify && !new RegExp(optionsObj.notification_ignore_content, 'i').test(data.appended_descr);
+            showNotify = showNotify && !new RegExp(optionsObj.notification_ignore_currency, 'i').test(data.currencyCode);
             if (showNotify) {
                 //play sound
                 if (optionsObj.notification_sound_play) {
@@ -80,19 +108,21 @@ function showMessageDesktop(_obj) {
                 //show message
                 var budget = '';
                 if (data.maxbudget && data.minbudget) {
-                    budget = data.currency + data.minbudget + ' - ' + data.currency + data.maxbudget + ' ' + data.currencyCode;
+                    budget = data.minbudget + ' - ' +  data.maxbudget+ data.currencyCode;
                 } else if (data.minbudget) {
-                    budget = 'min ' + data.currency + data.minbudget + ' ' + data.currencyCode;
+                    budget = 'min ' + data.minbudget + data.currencyCode;
                 } else if (data.maxbudget) {
-                    budget = 'max ' + data.currency + data.maxbudget + ' ' + data.currencyCode;
+                    budget = 'max ' + data.maxbudget  + data.currencyCode;
                 } else if (data.projIsHourly) {
                     budget = "*Hourly*";
                 }
+                var _time=timeSince(new Date(data.submitDate+" EST"));
 
                 var content = optionsObj.notification_format.replace("[job_string]", data.jobString)
                         .replace("[summary]", shorten(data.appended_descr))
                         .replace("[budget]", budget)
                     .replace("[user_name]", data.userName)
+                    .replace("[time]", _time)
                 .replace(/\[break\]/g, "\n");
                 console.log(content);
                 chrome.notifications.create(data.id + '', {
@@ -109,7 +139,7 @@ function showMessageDesktop(_obj) {
                     }, parseInt(optionsObj.notification_time_clear) * 1000);
                 });
             } else {
-                console.log('canceled notify object');
+                console.log('canceled notify object: data object show below');
                 console.log(data);
             }
 
@@ -171,9 +201,9 @@ var connect = function () {
     };
     ws.onclose = function () {
         console.log('socket close');
-        if (status == _running) {
+        if (_status == _running) {
 
-            //setTimeout(connect, reconnectInterval);
+            setTimeout(connect, reconnectInterval);
         } else {
             console.log('socket close by User');
         }
@@ -208,31 +238,31 @@ function getListCookie(domain, keys, callback) {
     getCk(domain, key, next);
 }
 function restartListen(newoptions) {
-    if (status == _running) {
+    if (_status == _running) {
         console.log('Restart listen');
         ShowCount('off');
-        status = _stop;
+        _status = _stop;
         ws.close();
         chrome.storage.local.get('options', function (data) {
             optionsObj = newoptions || optionsDefault;
             ShowCount('on');
-            status = _running;
+            _status = _running;
             connect();
         });
     }
 }
 function startListen() {
-    if (status == _running) {
+    if (_status == _running) {
         if (confirm('do you want stop recieve new jobs ?')) {
             ShowCount('off');
-            status = _stop;
+            _status = _stop;
             ws.close();
         }
     } else {
         chrome.storage.local.get('options', function (data) {
             optionsObj = data['options'] || optionsDefault;
             ShowCount('on');
-            status = _running;
+            _status = _running;
             connect();
         });
 
@@ -243,7 +273,8 @@ chrome.runtime.onInstalled.addListener(function () {
     chrome.storage.local.get('options', function (data) {
         optionsObj = data['options'] || optionsDefault;
         if (optionsObj.notification_welcome) {
-            chrome.tabs.create({ url: 'https://www.freelancer.com/get/autoclick?f=give', "selected": true });
+            window.open('/data/options/options.html', '_blank');
+            
         }
     });
 
@@ -252,10 +283,7 @@ chrome.notifications.onClicked.addListener(function (notificationId) {
     notifyClear(notificationId);
     window.focus();
     var url = "https://www.freelancer.com/projects/" + notificationId + ".html";
-    chrome.tabs.create({ "url": url, "selected": true }, function (tabObj) {
-        console.log('click call. That tab is: ' + tabObj.id);
-        chrome.tabs.update(tabObj.id, { active: true });
-    });
+    window.open(url, '_blank');
 });
 chrome.storage.local.get('options', function (data) {
     optionsObj = data['options'] || optionsDefault;

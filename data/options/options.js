@@ -13,6 +13,7 @@ function showOptions(optionsObj) {
     jQuery('#notification_ignore_uname').val(optionsObj.notification_ignore_uname);
     jQuery('#notification_ignore_title').val(optionsObj.notification_ignore_title);
     jQuery('#notification_ignore_content').val(optionsObj.notification_ignore_content);
+    jQuery('#notification_ignore_currency').val(optionsObj.notification_ignore_currency);
     jQuery('#notification_time_clear').val(optionsObj.notification_time_clear);
     jQuery('#notification_format').val(optionsObj.notification_format);
     jQuery('#notification_truncate').val(optionsObj.notification_truncate);
@@ -80,7 +81,7 @@ function saveData() {
     var notification_ignore_uname = jQuery('#notification_ignore_uname').val();
     var notification_ignore_title = jQuery('#notification_ignore_title').val();
     var notification_ignore_content = jQuery('#notification_ignore_content').val();
-    
+    var notification_ignore_currency = jQuery('#notification_ignore_currency').val();
     var notification_time_clear = jQuery('#notification_time_clear').val(); 
     var notification_format = jQuery('#notification_format').val();
     var notification_truncate = jQuery('#notification_truncate').val();
@@ -96,6 +97,7 @@ function saveData() {
         'notification_ignore_uname': notification_ignore_uname,
         'notification_ignore_title': notification_ignore_title,
         'notification_ignore_content': notification_ignore_content,
+        'notification_ignore_currency': notification_ignore_currency,
         'notification_time_clear': notification_time_clear,
         'notification_format': notification_format,
         'notification_truncate': notification_truncate,

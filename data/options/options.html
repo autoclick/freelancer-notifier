@@ -83,16 +83,16 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>Ignoring:</td>
+                    <td>Ignoring (Blacklist):</td>
                     <td>
                         <div class="box">
-                            <label>Ignore by Usernames(username1, username2)</label>
+                            <label>(Blacklist) Ignore by Usernames. USD|EUR|INR|AUD|HKD|SGD is ignore contains one of that value</label>
                             <input type="text" id="notification_ignore_uname">
                         </div>
                         <p class="note">Do not notify user's new project in list.</p>
                         <p class="spacer"></p>
                         <div class="box">
-                            <label>Ignore by Title</label>
+                            <label>(Blacklist) Ignore by Title</label>
                             <input type="text" id="notification_ignore_title">
                         </div>
                         <p class="note">
@@ -101,14 +101,22 @@
                         </p>
                         <p class="spacer"></p>
                         <div class="box">
-                            <label>Ignore by Content</label>
+                            <label>(Blacklist) Ignore by Content</label>
                             <input type="text" id="notification_ignore_content">
                         </div>
                         <p class="note">
                             Do not notify new project when Title match regex.<br />
-                            "selenium\\nselenium" is ignore contain contains space character
+                            USD|EUR|INR|AUD|HKD|SGD is ignore contains one of that value
                         </p>
-
+                        <p class="spacer"></p>
+                        <div class="box">
+                            <label>(Blacklist) Ignore by Currency(USD, EUR, INR, AUD, HKD, SGD)</label>
+                            <input type="text" id="notification_ignore_currency">
+                        </div>
+                        <p class="note">
+                            Do not notify new project when Currency match regex.<br />
+                            USD|EUR|INR|AUD|HKD|SGD
+                        </p>
                     </td>
                 </tr>
                 <tr>

@@ -19,7 +19,7 @@
    "manifest_version": 2,
    "name": "[2022-NEW]Freelancer Notifier",
    "options_page": "data/options/options.html",
-   "permissions": [ "notifications", "storage", "cookies", "tabs", "https://*.freelancer.com/*" ],
+   "permissions": [ "notifications", "storage", "cookies", "https://*.freelancer.com/*" ],
    "short_name": "Notifier",
-   "version": "2022.1.1"
+   "version": "2022.1.2"
 }
